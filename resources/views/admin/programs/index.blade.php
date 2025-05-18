@@ -46,6 +46,10 @@
                                 {{ $program->start_date->format('M d, Y') }}
                             </td>
                             <td>
+                                {{ $program->start_time->format('h:i A') }} - 
+                                {{ $program->end_time->format('h:i A') }}
+                            </td>
+                            <td>
                                 @if($program->allow_discussion)
                                     <span class="text-green-500">✓ Enabled</span>
                                 @else

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\SeniorController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -36,19 +37,34 @@ Route::post('/email/verify/resend', [VerificationController::class, 'resend'])
     ->name('verification.resend');
 
 
+
+
+
+
+
 Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])
     ->name('admin.dashboard');
 
     Route::resource('programs', ProgramController::class)->names('admin.programs');
+    Route::resource('seniors', SeniorController::class)
+    ->names('admin.seniors')
+    ->except(['show']);
 });
 
-    Route::middleware(['auth', 'verified', 'senior'])->group(function () {
+
+
+
+
+
+
+Route::middleware(['auth', 'verified', 'senior'])->group(function () {
     Route::get('/senior/dashboard', function () {
         return view('senior.dashboard');
     })->name('senior.dashboard');
     Route::post('/programs/{program}/discussions', [\App\Http\Controllers\DiscussionController::class, 'store'])
         ->name('discussions.store');
+    
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

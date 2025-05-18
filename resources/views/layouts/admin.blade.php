@@ -21,7 +21,7 @@
                 <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
                     Dashboard
                 </x-nav-link>
-                <x-nav-link href="#">
+                <x-nav-link href="{{ route('admin.seniors.index')}}" :active="request()->routeIs('admin.seniors.*')">
                     Manage Seniors
                 </x-nav-link>
                 <x-nav-link href="{{ route('admin.programs.index')}}" :active="request()->routeIs('admin.programs.*')">

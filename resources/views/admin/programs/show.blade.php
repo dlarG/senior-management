@@ -18,11 +18,14 @@
         <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
                 <p class="text-gray-500">Start Date</p>
-                <p>{{ \Carbon\Carbon::parse($program->start_date)->format('M d, Y') }}</p>
+                <p>{{ $program->start_date->format('M d, Y') }}</p>
             </div>
             <div>
-                <p class="text-gray-500">End Date</p>
-                <p>{{ \Carbon\Carbon::parse($program->end_date)->format('M d, Y') }}</p>
+                <p class="text-gray-500">Time Schedule</p>
+                <p>
+                    {{ $program->start_time->format('h:i A') }} - 
+                    {{ $program->end_time->format('h:i A') }}
+                </p>
             </div>
         </div>
 
