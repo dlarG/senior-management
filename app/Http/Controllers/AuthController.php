@@ -21,7 +21,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('auth.login')->with('success', 'Account logged out successfully!');
+        return redirect('/login')->with('success', 'Account logged out successfully!');
     }
     public function register(Request $request) {
         $validate = $request->validate([
@@ -41,21 +41,36 @@ class AuthController extends Controller
 
         $validate['password'] = Hash::make($validate['password']);
 
-        User::create($validate);
-
-        return redirect('/login')->with('success', 'Account created successfully');
+        $user = User::create($validate);
+        $user->sendEmailVerificationNotification(); // Send verification email
+    
+        return redirect('/login')->with('success', 'Account created successfully. Please check your email for verification instructions.');
     }
     public function login(Request $request) {
         $request->validate([
-            'login' => 'required|string', 
+            'login' => 'required|string',
             'password' => 'required|string',
         ]);
     
         $loginType = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
     
         if (Auth::attempt([$loginType => $request->input('login'), 'password' => $request->input('password')])) {
+            $user = Auth::user();
+    
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return back()->withErrors([
+                    'login' => 'You must verify your email before logging in.'
+                ])->onlyInput('login');
+            }
+    
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard')->with('success', 'Logged in successfully');
+    
+            if ($user->roleType === 'admin') {
+                return redirect()->route('admin.dashboard')->with('success', 'Logged in successfully');
+            } else {
+                return redirect()->route('senior.dashboard')->with('success', 'Logged in successfully');
+            }
         }
     
         return back()->withErrors([
