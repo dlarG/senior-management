@@ -8,6 +8,14 @@
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  @if(session('success'))
+  <div id="toast" class="fixed top-5 right-5 flex items-center bg-green-500 text-white text-sm font-bold px-4 py-3 rounded-md shadow-lg transition-opacity duration-500 opacity-0">
+    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <span>{{ session('success') }}</span>
+  </div>
+  @endif
   <div class="bg-white shadow-md rounded-xl w-full max-w-md p-8">
     <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
       Senior Citizen Management System
@@ -41,5 +49,21 @@
       <a href="/register" class="text-blue-600 hover:underline">Sign up</a>
     </p>
   </div>
+  <script>
+    // Show toast notification if exists
+    document.addEventListener('DOMContentLoaded', function() {
+      const toast = document.getElementById('toast');
+      if (toast) {
+        // Show toast
+        setTimeout(() => toast.classList.add('opacity-100'), 100);
+        
+        // Hide toast after 5 seconds
+        setTimeout(() => {
+          toast.classList.remove('opacity-100');
+          setTimeout(() => toast.remove(), 500);
+        }, 5000);
+      }
+    });
+  </script>
 </body>
 </html>

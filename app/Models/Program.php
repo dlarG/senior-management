@@ -28,6 +28,11 @@ class Program extends Model
         'end_time' => 'datetime:H:i:s',
     ];
 
+    public function hasEnded()
+    {
+        $endDateTime = Carbon::parse($this->start_date->format('Y-m-d') . ' ' . $this->end_time->format('H:i:s'));
+        return now()->greaterThan($endDateTime);
+    }
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -39,9 +44,10 @@ class Program extends Model
     protected static function booted()
     {
         static::saving(function ($program) {
+            // Preserve manual status updates
+            if ($program->status === 'successful') return;
+
             $now = now();
-            
-            // Combine start_date with end_time
             $endDateTime = Carbon::parse(
                 $program->start_date->format('Y-m-d') . ' ' . $program->end_time->format('H:i:s')
             );

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProgramController;
 use App\Http\Controllers\Admin\SeniorController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
@@ -47,9 +48,16 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     ->name('admin.dashboard');
 
     Route::resource('programs', ProgramController::class)->names('admin.programs');
+    Route::post('programs/{program}/mark-successful', [ProgramController::class, 'markSuccessful'])
+    ->name('admin.programs.mark-successful');
+    
     Route::resource('seniors', SeniorController::class)
     ->names('admin.seniors')
     ->except(['show']);
+
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
+    ->except(['show'])
+    ->names('admin.users');
 });
 
 

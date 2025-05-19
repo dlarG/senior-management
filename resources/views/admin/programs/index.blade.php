@@ -37,8 +37,12 @@
                             <td class="py-4">{{ $program->name }}</td>
                             <td>
                                 <span class="px-3 py-1 rounded-full text-sm 
-                                    {{ $program->status === 'active' ? 'bg-green-100 text-green-800' : 
-                                       ($program->status === 'inactive' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
+                                    @switch($program->status)
+                                        @case('active') bg-green-100 text-green-800 @break
+                                        @case('successful') bg-purple-100 text-purple-800 @break
+                                        @case('ended') bg-gray-100 text-gray-800 @break
+                                        @default bg-blue-100 text-blue-800
+                                    @endswitch">
                                     {{ ucfirst($program->status) }}
                                 </span>
                             </td>
@@ -75,6 +79,19 @@
                                     </button>
                                 </form>
                             </td>
+                            <td>
+                                @if($program->hasEnded())
+                                    <form class="ml-2" method="POST" action="{{ route('admin.programs.mark-successful', $program) }}">
+                                        @csrf
+                                        <input type="checkbox" 
+                                            class="success-checkbox w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500"
+                                            {{ $program->status === 'successful' ? 'checked' : '' }}
+                                            onchange="this.form.submit()">
+                                    </form>
+                                    @else
+                                    <span class="text-gray-400 text-sm">Ongoing</span>
+                                    @endif
+                            </td>
                         </tr>
                         @endforeach
                     </tbody>
@@ -87,4 +104,34 @@
         @endif
     </div>
 </div>
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle checkbox submissions
+        document.querySelectorAll('.success-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function(e) {
+                e.preventDefault();
+                
+                const form = this.closest('form');
+                fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: new FormData(form)
+                })
+                .then(response => {
+                    if (!response.ok) throw new Error('Update failed');
+                    location.reload(); // Refresh to update status
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    this.checked = !this.checked;
+                });
+            });
+        });
+    });
+    </script>
+@endpush
 @endsection

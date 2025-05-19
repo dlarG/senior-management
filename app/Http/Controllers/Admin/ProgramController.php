@@ -70,4 +70,14 @@ class ProgramController extends Controller
         $program->delete();
         return redirect()->route('admin.programs.index')->with('success', 'Program deleted!');
     }
+    public function markSuccessful(Program $program)
+    {
+        // Check if program has ended
+        if ($program->hasEnded()) {
+            $program->update(['status' => 'successful']);
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false], 400);
+    }
 }
