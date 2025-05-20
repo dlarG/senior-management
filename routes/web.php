@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProgramController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SeniorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
@@ -58,6 +59,11 @@ Route::middleware(['auth', 'verified', 'admin'])->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)
     ->except(['show'])
     ->names('admin.users');
+
+    Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+    Route::get('/reports/export/pdf', [ReportController::class, 'exportPdf'])->name('admin.reports.export.pdf');
+    Route::get('/reports/export/csv', [ReportController::class, 'exportCsv'])->name('admin.reports.export.csv');
+
 });
 
 

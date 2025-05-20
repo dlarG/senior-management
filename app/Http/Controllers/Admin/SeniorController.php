@@ -32,7 +32,7 @@ class SeniorController extends Controller
             'roleType' => 'senior'
         ]);
         $user->sendEmailVerificationNotification();
-        return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen added successfully');
+        return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen added successfully. Please check their email for verification');
     }
     public function edit(User $senior) {
         return view('admin.seniors.edit', compact('senior'));

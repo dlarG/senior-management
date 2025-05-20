@@ -22,20 +22,11 @@
 
             <!-- Navigation -->
             <nav class="space-y-2">
-                <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
+                <x-nav-link href="{{ route('senior.dashboard') }}" :active="request()->routeIs('senior.dashboard')">
                     <i class='bx bx-home-alt mr-3'></i> Dashboard
                 </x-nav-link>
-                <x-nav-link href="{{ route('admin.seniors.index')}}" :active="request()->routeIs('admin.seniors.*')">
-                    <i class='bx bx-group mr-3'></i> Manage Seniors
-                </x-nav-link>
-                <x-nav-link href="{{ route('admin.programs.index')}}" :active="request()->routeIs('admin.programs.*')">
+                <x-nav-link href="{{--{{ route('seniors.programs.index')}}" :active="request()->routeIs('seniors.programs.*')--}}#">
                     <i class='bx bx-calendar-event mr-3'></i> Programs
-                </x-nav-link>
-                <x-nav-link href="{{ route('admin.users.index')}}" :active="request()->routeIs('admin.users.*')">
-                    <i class='bx bx-user-pin mr-3'></i> Users
-                </x-nav-link>
-                <x-nav-link href="{{ route('admin.reports.index')}}" :active="request()->routeIs('admin.reports.index')">
-                    <i class='bx bx-line-chart mr-3'></i> Reports
                 </x-nav-link>
             </nav>
 
