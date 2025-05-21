@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\ActivityLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -32,6 +33,7 @@ class SeniorController extends Controller
             'roleType' => 'senior'
         ]);
         $user->sendEmailVerificationNotification();
+        ActivityLogger::log("Senior citizen added", $user);
         return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen added successfully. Please check their email for verification');
     }
     public function edit(User $senior) {
@@ -48,12 +50,14 @@ class SeniorController extends Controller
         ]);
 
         $senior->update($request->all());
+        ActivityLogger::log("Senior citizen updated", $senior);
         return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen updated successfully');
     }
 
     public function destroy(User $senior)
     {
         $senior->delete();
+        ActivityLogger::log("Deleted senior citizen", $senior);
         return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen removed successfully');
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ActivityLogger;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -57,6 +58,17 @@ class Program extends Model
                 $program->start_date->isFuture() => 'upcoming',
                 default => 'active'
             };
+        });
+        static::created(function ($program) {
+            ActivityLogger::log("Created program: {$program->name}", $program);
+        });
+    
+        static::updated(function ($program) {
+            ActivityLogger::log("Updated program: {$program->name}", $program);
+        });
+    
+        static::deleted(function ($program) {
+            ActivityLogger::log("Deleted program: {$program->name}", $program);
         });
     }
 }

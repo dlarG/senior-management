@@ -57,24 +57,21 @@
             <i class='bx bx-time mr-2'></i> Recent Activities
         </h2>
         <div class="space-y-4">
-            @forelse($recentActivities as $activity)
+            @foreach($recentActivities as $activity)
             <div class="flex items-start space-x-4">
                 <div class="w-8 h-8 bg-blue-50 rounded-full flex items-center justify-center">
-                    <i class='bx {{ $activity['icon'] }} text-blue-600'></i>
+                    <i class='bx {{ $activity['icon'] }} text-blue-500'></i>
                 </div>
                 <div>
-                    <p class="text-sm font-medium">{{ $activity['title'] }}</p>
-                    <p class="text-sm text-gray-500">
-                        {{ $activity['name'] }} • 
-                        {{ $activity['date']->diffForHumans() }}
-                    </p>
+                    <span class="text-sm font-medium">{{ $activity['user'] }}</span>
+                        <span class="text-sm">{{ $activity['description'] }}</span>
+                        @if($activity['subject'])
+                            <span class="text-xs text-gray-500">({{ $activity['subject'] }})</span>
+                        @endif
                 </div>
             </div>
-            @empty
-            <div class="text-center text-gray-500 py-4">
-                No recent activities found
-            </div>
-            @endforelse
+            <span class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($activity['date'])->diffForHumans() }}</span>
+            @endforeach
         </div>
     </div>
 </div>

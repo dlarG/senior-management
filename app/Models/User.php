@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\ActivityLogger;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -51,5 +52,19 @@ class User extends Authenticatable implements MustVerifyEmail
     public function programs(): HasMany
     {
         return $this->hasMany(Program::class, 'user_id');
+    }
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            ActivityLogger::log("Created user: {$user->username}", $user);
+        });
+
+        static::updated(function ($user) {
+            ActivityLogger::log("Updated user: {$user->username}", $user);
+        });
+
+        static::deleted(function ($user) {
+            ActivityLogger::log("Deleted user: {$user->username}", $user);
+        });
     }
 }

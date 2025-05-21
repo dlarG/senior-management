@@ -6,6 +6,10 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SeniorController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DiscussionController as ControllersDiscussionController;
+use App\Http\Controllers\Senior\DiscussionController;
+use App\Http\Controllers\Senior\SeniorProgramController;
+use App\Http\Controllers\SeniorProgramController as ControllersSeniorProgramController;
 use App\Http\Controllers\VerificationController;
 use Illuminate\Support\Facades\Route;
 
@@ -76,9 +80,9 @@ Route::middleware(['auth', 'verified', 'senior'])->group(function () {
     Route::get('/senior/dashboard', function () {
         return view('senior.dashboard');
     })->name('senior.dashboard');
-    Route::post('/programs/{program}/discussions', [\App\Http\Controllers\DiscussionController::class, 'store'])
-        ->name('discussions.store');
-    
+    Route::get('/senior/programs', [ControllersSeniorProgramController::class, 'index'])->name('senior.programs.index');
+    Route::get('/senior/programs/{program}', [ControllersSeniorProgramController::class, 'show'])->name('senior.programs.show');
+    Route::post('/senior/programs/{program}/discussions', [ControllersDiscussionController::class, 'store'])->name('senior.programs.discussions.store');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

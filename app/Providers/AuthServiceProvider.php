@@ -3,6 +3,9 @@
 namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
+
+use App\Models\Program;
+use App\Models\User;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 
@@ -28,6 +31,9 @@ class AuthServiceProvider extends ServiceProvider
     
         Gate::define('senior', function ($user) {
             return $user->roleType === 'senior';
+        });
+        Gate::define('participate-program', function (User $user, Program $program) {
+            return $program->allow_discussion && $user->roleType === 'senior';
         });
     }
 }

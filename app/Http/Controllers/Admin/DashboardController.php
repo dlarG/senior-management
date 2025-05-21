@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Program;
 use App\Models\User;
 use Carbon\Carbon;
@@ -21,7 +22,7 @@ class DashboardController extends Controller
         $totalDeceasedUsers = User::where('status', 'deceased')->count();
         
         // Program Statistics
-        $totalPrograms = Program::where('status', 'active')->count();
+        $totalPrograms = Program::where('status', 'upcoming')->count();
         $newProgramsThisWeek = Program::whereBetween('created_at', [
             now()->startOfWeek(),
             now()->endOfWeek()
@@ -41,35 +42,19 @@ class DashboardController extends Controller
             : 100;
 
         // Recent Activities (Last 5 from both models)
-        $userActivities = User::latest()
+        $recentActivities = ActivityLog::with(['user', 'subject'])
+            ->latest()
             ->take(5)
             ->get()
-            ->map(function ($user) {
+            ->map(function ($activity) {
                 return [
-                    'type' => 'user',
-                    'title' => $user->roleType === 'senior' ? 'New Senior Registered' : 'New Admin Added',
-                    'name' => $user->fullname,
-                    'date' => $user->created_at,
-                    'icon' => $user->roleType === 'senior' ? 'bx-user-plus' : 'bx-shield-plus'
+                    'description' => $activity->description,
+                    'user' => $activity->user->name ?? 'System',
+                    'subject' => $activity->subject ? $activity->subject->name ?? class_basename($activity->subject) : null,
+                    'date' => $activity->created_at,
+                    'icon' => $this->getActivityIcon($activity)
                 ];
             });
-
-        $programActivities = Program::latest()
-            ->take(5)
-            ->get()
-            ->map(function ($program) {
-                return [
-                    'type' => 'program',
-                    'title' => 'New Program Created',
-                    'name' => $program->name,
-                    'date' => $program->created_at,
-                    'icon' => 'bx-calendar-plus'
-                ];
-            });
-
-        $recentActivities = $userActivities->merge($programActivities)
-            ->sortByDesc('date')
-            ->take(5);
 
         return view('admin.dashboard', compact(
             'totalAdmins',
@@ -82,5 +67,18 @@ class DashboardController extends Controller
             'newProgramsThisWeek',
             'recentActivities'
         ));
+    }
+    private function getActivityIcon(ActivityLog $activity)
+    {
+        $subjectType = $activity->subject_type ? class_basename($activity->subject_type) : null;
+
+        return match (true) {
+            str_contains($activity->description, 'added') => 'bx-user-plus',
+            str_contains($activity->description, 'updated') => 'bx-edit',
+            str_contains($activity->description, 'deleted') => 'bx-trash',
+            $subjectType === 'Program' => 'bx-calendar-event',
+            $subjectType === 'User' => 'bx-user',
+            default => 'bx-info-circle'
+        };
     }
 }

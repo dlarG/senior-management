@@ -99,14 +99,21 @@
             @foreach($recentActivities as $activity)
             <div class="flex items-center justify-between border-b pb-2">
                 <div class="flex items-center space-x-3">
-                    <i class='bx bx-info-circle text-blue-500'></i>
-                    <span class="text-sm">{{ $activity['title'] }} - {{ $activity['name'] }}</span>
+                    <i class='bx {{ $activity['icon'] }} text-blue-500'></i>
+                    <div>
+                        <span class="text-sm font-medium">{{ $activity['user'] }}</span>
+                        <span class="text-sm">{{ $activity['description'] }}</span>
+                        @if($activity['subject'])
+                            <span class="text-xs text-gray-500">({{ $activity['subject'] }})</span>
+                        @endif
+                    </div>
                 </div>
                 <span class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($activity['date'])->diffForHumans() }}</span>
             </div>
             @endforeach
         </div>
     </div>
+    
 </div>
 
 @push('scripts')

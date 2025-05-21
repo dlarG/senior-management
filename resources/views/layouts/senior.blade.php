@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Senior Citizen Management System</title>
+    <title>Senior Dashboard - Senior Citizen Management System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     @stack('styles')
@@ -25,7 +25,7 @@
                 <x-nav-link href="{{ route('senior.dashboard') }}" :active="request()->routeIs('senior.dashboard')">
                     <i class='bx bx-home-alt mr-3'></i> Dashboard
                 </x-nav-link>
-                <x-nav-link href="{{--{{ route('seniors.programs.index')}}" :active="request()->routeIs('seniors.programs.*')--}}#">
+                <x-nav-link href="{{ route('senior.programs.index')}}" :active="request()->routeIs('senior.programs.*')">
                     <i class='bx bx-calendar-event mr-3'></i> Programs
                 </x-nav-link>
             </nav>

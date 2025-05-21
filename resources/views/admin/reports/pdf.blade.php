@@ -3,20 +3,53 @@
 <head>
     <title>System Report</title>
     <style>
-        body { font-family: sans-serif; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        td, th { border: 1px solid #000; padding: 8px; text-align: left; }
+        body { font-family: Arial, sans-serif; }
+        .header { text-align: center; margin-bottom: 2rem; }
+        .metric-card { margin-bottom: 1rem; padding: 1rem; border: 1px solid #eee; }
+        .activity-log { margin-top: 2rem; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 0.5rem; border: 1px solid #ddd; }
     </style>
 </head>
 <body>
-    <h2>System Report</h2>
+    <div class="header">
+        <h1>System Report - {{ now()->format('F j, Y') }}</h1>
+    </div>
+
+    <h2>Key Metrics</h2>
+    <div class="metrics">
+        <div class="metric-card">
+            <strong>Total Seniors:</strong> {{ $metrics['totalSeniors'] }}
+        </div>
+        <!-- Add other metrics similarly -->
+    </div>
+
+    <h2 class="activity-log">Recent Activities</h2>
     <table>
-        <tr><th>Total Seniors</th><td>{{ $totalSeniors }}</td></tr>
-        <tr><th>Active Seniors</th><td>{{ $activeSeniors }}</td></tr>
-        <tr><th>Inactive Seniors</th><td>{{ $inactiveSeniors }}</td></tr>
-        <tr><th>Deceased Seniors</th><td>{{ $deceasedSeniors }}</td></tr>
-        <tr><th>Active Programs</th><td>{{ $activePrograms }}</td></tr>
-        <tr><th>Total Users</th><td>{{ $totalUsers }}</td></tr>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>User</th>
+                <th>Activity</th>
+                <th>Subject</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($activities as $activity)
+            <tr>
+                <td>{{ $activity->created_at->format('Y-m-d H:i') }}</td>
+                <td>{{ $activity->user->name ?? 'System' }}</td>
+                <td>{{ $activity->description }}</td>
+                <td>
+                    @if($activity->subject)
+                        {{ class_basename($activity->subject) }}: {{ $activity->subject->name ?? $activity->subject->id }}
+                    @else
+                        N/A
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
     </table>
 </body>
 </html>
