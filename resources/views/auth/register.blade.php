@@ -5,68 +5,96 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
   <title>Sign Up - Senior Citizen Management System</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="bg-gray-100 flex items-center justify-center min-h-screen">
-  <div class="bg-white shadow-md rounded-xl w-full max-w-md p-8">
+<body class="bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center min-h-screen p-4">
+  <div class="bg-white shadow-2xl rounded-2xl w-full max-w-md p-8 transition-all duration-300 hover:shadow-3xl">
     @if ($errors->any())
-    <div class="mb-4 text-red-600">
-        <ul class="list-disc pl-5">
-        @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-        @endforeach
-        </ul>
+    <div class="mb-6 bg-red-50 border-l-4 border-red-400 p-4 rounded-lg">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="ml-3">
+          @foreach ($errors->all() as $error)
+            <p class="text-sm text-red-700">{{ $error }}</p>
+          @endforeach
+        </div>
+      </div>
     </div>
     @endif
-    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">
-      Create an Account
-    </h2>
-    <form action="{{route('register_pro')}}" method="POST" class="space-y-5">
+    
+    <div class="text-center mb-8">
+      <h1 class="text-3xl font-extrabold text-gray-900 mb-2">Join Our Community</h1>
+      <p class="text-gray-500">Create your account in minutes</p>
+    </div>
+
+    <form action="{{route('register_pro')}}" method="POST" class="space-y-6">
       @csrf
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-        <label for="firstname" class="block text-sm font-medium text-gray-700">First Name</label>
-        <input type="text" id="firstname" name="firstname" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+          <label class="block text-sm font-medium text-gray-700 mb-2">First Name <span class="text-red-500">*</span></label>
+          <input type="text" name="firstname" required
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Middle Name</label>
+          <input type="text" name="middlename"
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
+        </div>
       </div>
+
       <div>
-        <label for="middlename" class="block text-sm font-medium text-gray-700">Middle Name (optional)</label>
-        <input type="text" id="middlename" name="middlename"
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label class="block text-sm font-medium text-gray-700 mb-2">Last Name <span class="text-red-500">*</span></label>
+        <input type="text" name="lastname" required
+          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
       </div>
+
       <div>
-        <label for="lastname" class="block text-sm font-medium text-gray-700">Last Name</label>
-        <input type="text" id="lastname" name="lastname" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label class="block text-sm font-medium text-gray-700 mb-2">Birthdate <span class="text-red-500">*</span></label>
+        <input type="date" name="birthdate" required max="{{ now()->subYears(60)->format('Y-m-d') }}"
+          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
+        <p class="mt-1 text-sm text-gray-500">Must be at least 60 years old</p>
       </div>
+
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
-        <input type="email" id="email" name="email" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label class="block text-sm font-medium text-gray-700 mb-2">Email <span class="text-red-500">*</span></label>
+        <input type="email" name="email" required
+          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
       </div>
+
       <div>
-        <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
-        <input type="text" id="username" name="username" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+        <label class="block text-sm font-medium text-gray-700 mb-2">Username <span class="text-red-500">*</span></label>
+        <input type="text" name="username" required
+          class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
       </div>
-      <div>
-        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
-        <input type="password" id="password" name="password" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Password <span class="text-red-500">*</span></label>
+          <input type="password" name="password" required
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password <span class="text-red-500">*</span></label>
+          <input type="password" name="password_confirmation" required
+            class="w-full px-4 py-3 rounded-lg border border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition duration-300 outline-none">
+        </div>
       </div>
-      <div>
-        <label for="confirm" class="block text-sm font-medium text-gray-700">Confirm Password</label>
-        <input type="password" id="confirm" name="password_confirmation" required
-          class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500" />
-      </div>
+
       <input type="hidden" name="roleType" value="senior">
+      
       <button type="submit"
-        class="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300">
-        Sign Up
+        class="w-full py-3.5 px-6 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-md hover:from-blue-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-[1.02]">
+        Create Account
       </button>
     </form>
-    <p class="text-center text-sm text-gray-500 mt-6">
+
+    <p class="text-center text-sm text-gray-600 mt-8">
       Already have an account?
-      <a href="/login" class="text-blue-600 hover:underline">Login</a>
+      <a href="/login" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline">Sign in here</a>
     </p>
   </div>
 </body>

@@ -37,6 +37,16 @@ class AuthController extends Controller
                                 'confirmed'
                             ],
             'roleType' => 'required|string',
+            'birthdate' => [
+                    'required',
+                    'date',
+                    function ($attribute, $value, $fail) {
+                        $age = now()->diffInYears($value);
+                        if ($age < 60) {
+                            $fail('You must be at least 60 years old to register as a senior citizen.');
+                        }
+                    }
+                ],
         ]);
 
         $validate['password'] = Hash::make($validate['password']);

@@ -40,11 +40,25 @@ class DashboardController extends Controller
         $seniorGrowthPercentage = $lastMonthSeniors > 0 
             ? round(($currentMonthSeniors - $lastMonthSeniors) / $lastMonthSeniors * 100, 2)
             : 100;
+        $monthlySeniorRegistrations = User::where('roleType', 'senior')
+            ->whereYear('created_at', now()->year)
+            ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('count', 'month')
+            ->toArray();
 
+        // Prepare data for all 12 months (fill missing months with 0)
+        $months = [];
+        $counts = [];
+        foreach (range(1, 12) as $m) {
+            $months[] = date('M', mktime(0, 0, 0, $m, 1));
+            $counts[] = $monthlySeniorRegistrations[$m] ?? 0;
+        }
         // Recent Activities (Last 5 from both models)
         $recentActivities = ActivityLog::with(['user', 'subject'])
             ->latest()
-            ->take(5)
+            ->take(4)
             ->get()
             ->map(function ($activity) {
                 return [
@@ -65,7 +79,9 @@ class DashboardController extends Controller
             'totalPrograms',
             'seniorGrowthPercentage',
             'newProgramsThisWeek',
-            'recentActivities'
+            'recentActivities',
+            'months',
+            'counts'
         ));
     }
     private function getActivityIcon(ActivityLog $activity)

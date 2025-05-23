@@ -25,6 +25,16 @@ class SeniorController extends Controller
             'username' => 'required|string|unique:users,username',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
+            'birthdate' => [
+                            'required',
+                            'date',
+                            function ($attribute, $value, $fail) {
+                                $age = now()->diffInYears($value);
+                                if ($age < 60) {
+                                    $fail('The user must be at least 60 years old.');
+                                }
+                            }
+            ]
         ]);
 
         $user = User::create([
@@ -40,18 +50,39 @@ class SeniorController extends Controller
         return view('admin.seniors.edit', compact('senior'));
     }
     public function update(Request $request, User $senior) {
-        $request->validate([
+        $rules = [
             'firstname' => 'required|string|max:255',
             'middlename' => 'nullable|string|max:255',
             'lastname' => 'required|string|max:255',
             'username' => 'required|string|unique:users,username,'.$senior->id,
-            'email' => 'required|email|unique:users,email,'.$senior->id,
-            'status' => 'required|in:active,inactive,deceased'
-        ]);
+            'status' => 'required|in:active,inactive,deceased',
+            'birthdate' => [
+                'required',
+                'date',
+                function ($attribute, $value, $fail) {
+                    $age = now()->diffInYears($value);
+                    if ($age < 60) {
+                        $fail('The user must be at least 60 years old.');
+                    }
+                }
+            ]
+        ];
 
-        $senior->update($request->all());
+        // Only validate email if provided
+        if ($request->filled('email')) {
+            $rules['email'] = 'email|unique:users,email,'.$senior->id;
+        }
+
+        $validated = $request->validate($rules);
+
+        // If email is blank, keep the current email
+        if (!$request->filled('email')) {
+            $validated['email'] = $senior->email;
+        }
+
+        $senior->update($validated);
         ActivityLogger::log("Senior citizen updated", $senior);
-        return redirect()->route('admin.seniors.index')->with('success', 'Senior citizen updated successfully');
+        return redirect()->route('admin.seniors.index')->with('status', 'Senior citizen updated successfully');
     }
 
     public function destroy(User $senior)
