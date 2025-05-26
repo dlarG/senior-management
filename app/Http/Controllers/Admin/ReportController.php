@@ -13,7 +13,36 @@ class ReportController extends Controller
 {
     public function index()
     {
-        $recentActivities = ActivityLog::with(['user', 'subject'])
+        // Get filter parameters
+        $reportType = request('report_type', 'seniors');
+        $startDate = request('start_date') ? Carbon::parse(request('start_date')) : now()->subDays(30);
+        $endDate = request('end_date') ? Carbon::parse(request('end_date')) : now();
+
+        // Base queries
+        $userQuery = User::query();
+        $programQuery = Program::query();
+        $activityQuery = ActivityLog::query();
+
+        // Apply date filters
+        $userQuery->whereBetween('created_at', [$startDate, $endDate]);
+        $programQuery->whereBetween('created_at', [$startDate, $endDate]);
+        $activityQuery->whereBetween('created_at', [$startDate, $endDate]);
+
+        // Apply report type specific filters
+        switch ($reportType) {
+            case 'seniors':
+                $userQuery->where('roleType', 'senior');
+                break;
+            case 'programs':
+                // Add any program-specific filters here
+                break;
+            case 'users':
+                // Add any user-specific filters here
+                break;
+        }
+
+        // Recent activities with relationships
+        $recentActivities = $activityQuery->with(['user', 'subject'])
             ->latest()
             ->take(5)
             ->get()
@@ -28,15 +57,16 @@ class ReportController extends Controller
             });
 
         return view('admin.reports.index', [
-            'totalSeniors' => User::where('roleType', 'senior')->count(),
-            'activeSeniors' => User::where('status', 'active')->count(),
-            'inactiveSeniors' => User::where('status', 'inactive')->count(),
-            'deceasedSeniors' => User::where('status', 'deceased')->count(),
-            'activePrograms' => Program::where('status', 'upcoming')->count(),
+            'totalSeniors' => $userQuery->where('roleType', 'senior')->count(),
+            'activeSeniors' => $userQuery->clone()->where('status', 'active')->count(),
+            'deceasedSeniors' => $userQuery->clone()->where('status', 'deceased')->count(),
+            'activePrograms' => $programQuery->where('status', 'upcoming')->count(),
             'totalUsers' => User::count(),
-            'programNames' => Program::pluck('name'),
-            'programParticipants' => Program::withCount('discussions')->pluck('discussions_count'),
-            'recentActivities' => $recentActivities
+            'programNames' => $programQuery->clone()->pluck('name'),
+            'programParticipants' => $programQuery->clone()->withCount('discussions')->pluck('discussions_count'),
+            'recentActivities' => $recentActivities,
+            'activeSeniorsCount' => $userQuery->clone()->where('status', 'active')->count(),
+            'deceasedSeniorsCount' => $userQuery->clone()->where('status', 'deceased')->count(),
         ]);
     }
 
@@ -56,17 +86,28 @@ class ReportController extends Controller
 
     public function exportPdf()
     {
+        $startDate = request('start_date') ? Carbon::parse(request('start_date')) : now()->subDays(30);
+        $endDate = request('end_date') ? Carbon::parse(request('end_date')) : now();
+        $reportType = request('report_type', 'seniors');
+
+        $userQuery = User::whereBetween('created_at', [$startDate, $endDate]);
+        $programQuery = Program::whereBetween('created_at', [$startDate, $endDate]);
+
+        if ($reportType === 'seniors') {
+            $userQuery->where('roleType', 'senior');
+        }
+
         $metrics = [
-            'totalSeniors' => User::where('roleType', 'senior')->count(),
-            'activeSeniors' => User::where('status', 'active')->count(),
-            'inactiveSeniors' => User::where('status', 'inactive')->count(),
-            'deceasedSeniors' => User::where('status', 'deceased')->count(),
-            'activePrograms' => Program::where('status', 'active')->count(),
+            'totalSeniors' => $userQuery->clone()->count(),
+            'activeSeniors' => $userQuery->clone()->where('status', 'active')->count(),
+            'inactiveSeniors' => $userQuery->clone()->where('status', 'inactive')->count(),
+            'deceasedSeniors' => $userQuery->clone()->where('status', 'deceased')->count(),
+            'activePrograms' => $programQuery->clone()->where('status', 'active')->count(),
             'totalUsers' => User::count(),
         ];
 
         $activities = ActivityLog::with(['user', 'subject'])
-            ->where('created_at', '>=', now()->subDays(30))
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->get();
 
         $pdf = Pdf::loadView('admin.reports.pdf', compact('metrics', 'activities'));

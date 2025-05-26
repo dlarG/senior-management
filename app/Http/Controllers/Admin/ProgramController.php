@@ -25,10 +25,12 @@ class ProgramController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
-            'start_date' => 'required|date',
+            'start_date' => 'required|date|after:today',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i|after:start_time',
             'allow_discussion' => 'sometimes|boolean'
+        ], [
+            'start_date.after' => 'Error! You can only add a program starting tomorrow or later.'
         ]);
 
         $program = Program::create([
@@ -54,7 +56,14 @@ class ProgramController extends Controller
     public function update(Request $request, Program $program)
     {
         $request->validate([
-            // same as store
+            'name' => 'required|string|max:255',
+            'description' => 'required|string',
+            'start_date' => 'required|date|after:today',
+            'start_time' => 'required|date_format:H:i',
+            'end_time' => 'required|date_format:H:i|after:start_time',
+            'allow_discussion' => 'sometimes|boolean'
+        ], [
+            'start_date.after' => 'Error! You can only schedule a program starting tomorrow or later.'
         ]);
 
         $program->update([
@@ -72,7 +81,6 @@ class ProgramController extends Controller
     }
     public function markSuccessful(Program $program)
     {
-        // Check if program has ended
         if ($program->hasEnded()) {
             $program->update(['status' => 'successful']);
             return response()->json(['success' => true]);

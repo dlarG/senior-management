@@ -62,7 +62,7 @@
                 <div class="flex-1">
                     <div class="flex justify-between items-start mb-2">
                         <div>
-                            <p class="font-medium text-gray-900">{{ $discussion->user->fullName() }}</p>
+                            <p class="font-medium text-gray-900">{{ $discussion->user->firstname }} {{$discussion->user->lastname }}</p>
                             <p class="text-sm text-gray-500">{{ $discussion->created_at->diffForHumans() }}</p>
                         </div>
                     </div>
