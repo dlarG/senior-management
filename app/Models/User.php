@@ -55,18 +55,18 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(Program::class, 'user_id');
     }
-    protected static function booted()
-    {
-        static::created(function ($user) {
-            ActivityLogger::log("Created user: {$user->username}", $user);
-        });
+     protected static function booted()
+     {
+         static::created(function ($user) {
+             ActivityLogger::log("Created user: {$user->username}", $user);
+         });
 
-        static::updated(function ($user) {
-            ActivityLogger::log("Updated user: {$user->username}", $user);
-        });
+         static::updated(function ($user) {
+             ActivityLogger::log("Updated user: {$user->username}", $user);
+         });
 
-        static::deleted(function ($user) {
-            ActivityLogger::log("Deleted user: {$user->username}", $user);
-        });
-    }
+         static::deleted(function ($user) {
+             ActivityLogger::log("Deleted user: {$user->username}", $user);
+         });
+     }
 }
